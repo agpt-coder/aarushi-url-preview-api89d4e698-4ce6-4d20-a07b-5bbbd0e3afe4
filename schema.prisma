@@ -1,0 +1,112 @@
+// datasource db defines the database connection settings.
+// It is configured for PostgreSQL and uses an environment variable for the connection URL.
+// The 'extensions' feature enables the use of PostgreSQL-specific data types.
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+}
+
+// generator db configures Prisma Client settings.
+// It is set up to use Prisma Client Python with asyncio interface and specific features.
+generator db {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+  previewFeatures      = ["postgresqlExtensions"]
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  password        String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  role            Role             @default(USER)
+  previewRequests PreviewRequest[]
+  accessLogs      AccessLog[]
+  rateLimits      RateLimit[]
+  subscriptions   Subscription[]
+}
+
+model PreviewRequest {
+  id              String           @id @default(uuid())
+  url             String
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  status          RequestStatus
+  previewMetadata PreviewMetadata?
+}
+
+model PreviewMetadata {
+  id               String         @id @default(uuid())
+  previewRequestId String         @unique
+  previewRequest   PreviewRequest @relation(fields: [previewRequestId], references: [id])
+  title            String
+  description      String?
+  image            String?
+  createdAt        DateTime       @default(now())
+  ContentCache     ContentCache[]
+}
+
+model AccessLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  createdAt DateTime @default(now())
+}
+
+model RateLimit {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  requestIp String
+  endpoint  String
+  count     Int
+  resetAt   DateTime
+}
+
+model Subscription {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id])
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  status           SubStatus
+  subscriptionType SubscriptionType
+}
+
+model ContentCache {
+  id                String           @id @default(uuid())
+  url               String           @unique
+  contentHash       String
+  createdAt         DateTime         @default(now())
+  previewMetadataId String?
+  previewMetadata   PreviewMetadata? @relation(fields: [previewMetadataId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+  PREMIUM
+}
+
+enum RequestStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum SubStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
+}
+
+enum SubscriptionType {
+  FREE
+  PREMIUM
+}
+

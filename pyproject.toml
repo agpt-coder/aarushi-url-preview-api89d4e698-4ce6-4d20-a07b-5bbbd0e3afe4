@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "aarushi-url-preview-api"
+version = "0.1.0"
+description = "Based on the user's requirements for webpage content extraction and metadata retrieval, the task will involve creating an endpoint that accomplishes several key functions: it will accept a URL from the user, retrieve the webpage content at that URL, extract relevant metadata, generate a preview snippet that includes the page's title, description, and a thumbnail image, and return structured preview data for use in link sharing and embedding. The project will utilize a specific tech stack consisting of Python as the programming language, FastAPI for the API framework to ensure high performance and easy async tasks handling, PostgreSQL for the database to store and manage extracted metadata efficiently, and Prisma as the ORM for seamless database integration and querying. The process will include parsing the webpage content with robust tools capable of handling various content structures, including dynamic content loaded through JavaScript. For preview snippet generation, the system will extract metadata such as HTML <title>, <meta name='description'> tags, Open Graph, and Schema.org metadata. These extracted elements will form the basis of the preview snippet, which will be structured and returned in a uniform format suitable for embedding or link sharing on social platforms or other web applications. Best practices for content extraction and metadata retrieval that have been considered include the ethical scraping respecting robots.txt, utilizing HTML parsing libraries for content extraction, and performance optimization to provide high-quality previews while minimizing load on servers and target websites."
+authors = ["AutoGPT <info@agpt.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+bcrypt = "^3.2.0"
+beautifulsoup4 = "*"
+fastapi = "^0.68.0"
+httpx = "*"
+passlib = {version = "^1.7.4", extras = ["bcrypt"]}
+prisma = "*"
+pydantic = "*"
+python-dotenv = "^0.19.0"
+uvicorn = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
